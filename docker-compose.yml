@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+
+  server:
+
+    build: server/
+
+    command: "python3 webCheckList.py -s=0.0.0.0 -p=8500 --dbhost=${DB_HOST} --dbname=${DB_NAME} --dbuser=${DB_USERNAME} --dbpassword=${DB_USERPASSWORD}"
+
+    ports:
+      - $API_PORT:8500
+    
+    networks:
+      - internal_network
+
+  client:
+
+    build: client/
+    
+    stdin_open: true
+
+    # tty: true
+
+    command: npm start
+
+    environment:
+      - REACT_APP_SERVER_ADDRESS=$REACT_APP_SERVER_ADDRESS
+      - REACT_APP_SERVER_PORT=$API_PORT
+
+    depends_on:
+      - server
+
+    ports:
+      - $PORT:3000
+
+    networks:
+      - internal_network
+
+networks:
+  internal_network:
